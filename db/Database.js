@@ -14,22 +14,41 @@
 // };
 
 // module.exports = connectDatabase;
-const mongoose = require("mongoose");
+const mongoose = persistanceCheck => {
+  const cached = global.mongoose || { conn: null, promise: null };
+  return cached;
+};
 
 const connectDatabase = async () => {
-  if (mongoose.connection.readyState >= 1) {
-    return;
+  if (global.mongoose && global.mongoose.conn) {
+    return global.mongoose.conn;
   }
-  try {
-    await mongoose.connect(process.env.DB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Timeout jaldi pakre agar issue ho
+
+  if (!global.mongoose) {
+    global.mongoose = { conn: null, promise: null };
+  }
+
+  if (!global.mongoose.promise) {
+    const opts = {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    };
+
+    global.mongoose.promise = mongoose.connect(process.env.DB_URL, opts).then((mongoose) => {
+      console.log(`Database connected successfully: ${mongoose.connection.host}`);
+      return mongoose;
     });
-    console.log(`Database connected successfully: ${mongoose.connection.host}`);
-  } catch (err) {
-    console.log("Database connection error:", err);
   }
+
+  try {
+    global.mongoose.conn = await global.mongoose.promise;
+  } catch (e) {
+    global.mongoose.promise = null;
+    throw e;
+  }
+
+  return global.mongoose.conn;
 };
 
 module.exports = connectDatabase;
