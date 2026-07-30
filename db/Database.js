@@ -14,41 +14,43 @@
 // };
 
 // module.exports = connectDatabase;
-const mongoose = persistanceCheck => {
-  const cached = global.mongoose || { conn: null, promise: null };
-  return cached;
-};
+const mongoose = require("mongoose");
+
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
 const connectDatabase = async () => {
-  if (global.mongoose && global.mongoose.conn) {
-    return global.mongoose.conn;
+  if (cached.conn) {
+    return cached.conn;
   }
 
-  if (!global.mongoose) {
-    global.mongoose = { conn: null, promise: null };
-  }
-
-  if (!global.mongoose.promise) {
+  if (!cached.promise) {
     const opts = {
       bufferCommands: false,
       serverSelectionTimeoutMS: 10000,
-      socketTimeoutMS: 45000,
     };
 
-    global.mongoose.promise = mongoose.connect(process.env.DB_URL, opts).then((mongoose) => {
-      console.log(`Database connected successfully: ${mongoose.connection.host}`);
-      return mongoose;
-    });
+    cached.promise = mongoose
+      .connect(process.env.DB_URL, opts)
+      .then((mongoose) => {
+        console.log(
+          `Database connected successfully: ${mongoose.connection.host}`,
+        );
+        return mongoose;
+      });
   }
 
   try {
-    global.mongoose.conn = await global.mongoose.promise;
+    cached.conn = await cached.promise;
   } catch (e) {
-    global.mongoose.promise = null;
+    cached.promise = null;
     throw e;
   }
 
-  return global.mongoose.conn;
+  return cached.conn;
 };
 
 module.exports = connectDatabase;
