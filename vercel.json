@@ -1,9 +1,23 @@
 {
+  "version": 2,
   "buildCommand": "npm install --legacy-peer-deps && npm run build",
   "env": {
     "NODE_ENV": "production",
     "CLOUDINARY_CLOUD_NAME": "djyzktbwd",
     "CLOUDINARY_API_KEY": "535453339729698",
     "CLOUDINARY_API_SECRET": "iiE872pGpL-mD48Vnf5_YQZnu1Y"
-  }
+  },
+  "builds": [
+    {
+      "src": "server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "server.js",
+      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+    }
+  ]
 }
