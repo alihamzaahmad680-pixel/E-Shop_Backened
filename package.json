@@ -3,10 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
-  },
+ "scripts": {
+  "install": "npm install --legacy-peer-deps",
+  "start": "node index.js",
+  "dev": "nodemon index.js"
+},
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.10.0",
