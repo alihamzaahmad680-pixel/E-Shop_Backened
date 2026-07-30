@@ -20,6 +20,13 @@ app.use(
 app.use("/", express.static("uploads"));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "E-Shop Backend is running",
+  });
+});
+
 const product = require("./controller/product");
 const user = require("./controller/user");
 const shop = require("./controller/shop");
