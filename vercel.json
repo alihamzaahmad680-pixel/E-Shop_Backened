@@ -1,4 +1,5 @@
 {
+  "buildCommand": "npm install --legacy-peer-deps && npm run build",
   "env": {
     "NODE_ENV": "production",
     "CLOUDINARY_CLOUD_NAME": "djyzktbwd",
@@ -6,4 +7,3 @@
     "CLOUDINARY_API_SECRET": "iiE872pGpL-mD48Vnf5_YQZnu1Y"
   }
 }
-
