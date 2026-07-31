@@ -169,7 +169,7 @@ router.get(
   }),
 );
 
-// Get Shop Info by ID
+// Get Shop Info by ID 
 router.get(
   "/get-shop-info/:id",
   catchAsyncErrors(async (req, res, next) => {
@@ -248,6 +248,7 @@ router.put("/update-seller-info", isSeller, async (req, res) => {
   }
 });
 
+
 // Update Shop Avatar Route
 router.put(
   "/update-shop-avatar",
@@ -266,7 +267,7 @@ router.put(
         {
           avatar: fileUrl,
         },
-        { new: true },
+        { new: true }
       );
 
       res.status(200).json({
@@ -276,6 +277,6 @@ router.put(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
-  }),
+  })
 );
 module.exports = router;
