@@ -213,19 +213,51 @@ router.put(
 );
 
 // update user avatar
+// router.put(
+//   "/update-avatar",
+//   isAuthenticated,
+//   upload.single("image"),
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const existsUser = await User.findById(req.user.id);
+//       const existAvatarPath = `uploads/${existsUser.avatar}`;
+//       fs.unlinkSync(existAvatarPath);
+//       const fileUrl = path.join(req.file.filename);
+//       const user = await User.findByIdAndUpdate(req.user.id, {
+//         avatar: fileUrl,
+//       });
+
+//       res.status(200).json({
+//         success: true,
+//         user,
+//       });
+//     } catch (error) {
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   }),
+// );
 router.put(
   "/update-avatar",
   isAuthenticated,
   upload.single("image"),
   catchAsyncErrors(async (req, res, next) => {
     try {
+      if (!req.file) {
+        return next(new ErrorHandler("Please upload an image", 400));
+      }
+
       const existsUser = await User.findById(req.user.id);
-      const existAvatarPath = `uploads/${existsUser.avatar}`;
-      fs.unlinkSync(existAvatarPath);
-      const fileUrl = path.join(req.file.filename);
-      const user = await User.findByIdAndUpdate(req.user.id, {
-        avatar: fileUrl,
-      });
+
+      // Agar multer-storage-cloudinary use ho raha hai, toh req.file.path mein poora Cloudinary URL hoga
+      const fileUrl = req.file.path || req.file.secure_url;
+
+      const user = await User.findByIdAndUpdate(
+        req.user.id,
+        {
+          avatar: fileUrl,
+        },
+        { new: true }
+      );
 
       res.status(200).json({
         success: true,
@@ -234,9 +266,8 @@ router.put(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
-  }),
+  })
 );
-
 // update user addresses
 router.put(
   "/update-user-addresses",
