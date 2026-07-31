@@ -169,7 +169,7 @@ router.get(
   }),
 );
 
-// Get Shop Info by ID 
+// Get Shop Info by ID
 router.get(
   "/get-shop-info/:id",
   catchAsyncErrors(async (req, res, next) => {
@@ -248,4 +248,34 @@ router.put("/update-seller-info", isSeller, async (req, res) => {
   }
 });
 
+// Update Shop Avatar Route
+router.put(
+  "/update-shop-avatar",
+  isSeller,
+  upload.single("image"),
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      if (!req.file) {
+        return next(new ErrorHandler("Please upload an image", 400));
+      }
+
+      const fileUrl = req.file.path || req.file.secure_url;
+
+      const shop = await Shop.findByIdAndUpdate(
+        req.seller._id,
+        {
+          avatar: fileUrl,
+        },
+        { new: true },
+      );
+
+      res.status(200).json({
+        success: true,
+        shop,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  }),
+);
 module.exports = router;
