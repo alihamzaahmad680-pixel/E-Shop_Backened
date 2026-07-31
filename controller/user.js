@@ -10,7 +10,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
 const { isAuthenticated } = require("../middleware/auth");
 const path = require("path");
-
+const connectDatabase = require("../db/Database"); // Apni file path ke mutabiq check kar lein ke db folder kahan hai
 router.post("/create-user", upload.single("file"), async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
@@ -102,10 +102,43 @@ router.post(
     }
   }),
 );
+// router.post(
+//   "/login-user",
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const { email, password } = req.body;
+
+//       if (!email || !password) {
+//         return next(new ErrorHandler("Please provide all fields!", 400));
+//       }
+
+//       const user = await User.findOne({ email }).select("+password");
+
+//       if (!user) {
+//         return next(new ErrorHandler("User does not exist!", 400));
+//       }
+
+//       const isPasswordValid = await user.comparePassword(password);
+
+//       if (!isPasswordValid) {
+//         return next(new ErrorHandler("Invalid email or password!", 400));
+//       }
+
+//       sendToken(user, 200, res);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }),
+// );
+
+// load user
 router.post(
   "/login-user",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      // 1. Sab se pehle database connection ka wait karein (Vercel serverless ke liye zaroori hai)
+      await connectDatabase();
+
       const { email, password } = req.body;
 
       if (!email || !password) {
@@ -130,8 +163,6 @@ router.post(
     }
   }),
 );
-
-// load user
 router.get(
   "/getuser",
   isAuthenticated,
