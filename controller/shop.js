@@ -11,6 +11,7 @@ const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const ErrorHandler = require("../utils/ErrorHandler");
 const sendShopToken = require("../utils/shopToken");
 const { isSeller } = require("../middleware/auth");
+const connectDatabase = require("../db/Database"); // Apne project ke folder structure ke mutabiq path check kar lein
 
 const ACTIVATION_SECRET =
   process.env.ACTIVATION_SECRET || "your_activation_secret_12345";
