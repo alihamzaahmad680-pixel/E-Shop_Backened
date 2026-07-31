@@ -14,6 +14,46 @@
 // };
 
 // module.exports = connectDatabase;
+// const mongoose = require("mongoose");
+
+// let cached = global.mongoose;
+
+// if (!cached) {
+//   cached = global.mongoose = { conn: null, promise: null };
+// }
+
+// const connectDatabase = async () => {
+//   if (cached.conn) {
+//     return cached.conn;
+//   }
+
+//   if (!cached.promise) {
+//     const opts = {
+//       bufferCommands: false,
+//       serverSelectionTimeoutMS: 10000,
+//     };
+
+//     cached.promise = mongoose
+//       .connect(process.env.DB_URL, opts)
+//       .then((mongoose) => {
+//         console.log(
+//           `Database connected successfully: ${mongoose.connection.host}`,
+//         );
+//         return mongoose;
+//       });
+//   }
+
+//   try {
+//     cached.conn = await cached.promise;
+//   } catch (e) {
+//     cached.promise = null;
+//     throw e;
+//   }
+
+//   return cached.conn;
+// };
+
+// module.exports = connectDatabase;
 const mongoose = require("mongoose");
 
 let cached = global.mongoose;
@@ -29,8 +69,8 @@ const connectDatabase = async () => {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 10000,
+      bufferCommands: true, // yahan true kar dein taake commands buffer ho sakein
+      serverSelectionTimeoutMS: 30000, // timeout ko 30 seconds kar dein
     };
 
     cached.promise = mongoose
