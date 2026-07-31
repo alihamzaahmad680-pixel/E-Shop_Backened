@@ -118,10 +118,41 @@ router.post(
 );
 
 // Login shop
+// router.post(
+//   "/login-shop",
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const { email, password } = req.body;
+
+//       if (!email || !password) {
+//         return next(new ErrorHandler("Please provide all fields!", 400));
+//       }
+
+//       const user = await Shop.findOne({ email }).select("+password");
+
+//       if (!user) {
+//         return next(new ErrorHandler("User does not exist!", 400));
+//       }
+
+//       const isPasswordValid = await user.comparePassword(password);
+
+//       if (!isPasswordValid) {
+//         return next(new ErrorHandler("Invalid email or password!", 400));
+//       }
+
+//       sendShopToken(user, 201, res);
+//     } catch (error) {
+//       next(error);
+//     }
+//   }),
+// );
 router.post(
   "/login-shop",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      // Yahan database connection add karein
+      await connectDatabase();
+
       const { email, password } = req.body;
 
       if (!email || !password) {
@@ -146,7 +177,6 @@ router.post(
     }
   }),
 );
-
 // Load shop
 router.get(
   "/getSeller",
@@ -169,11 +199,33 @@ router.get(
   }),
 );
 
-// Get Shop Info by ID 
+// Get Shop Info by ID
+// router.get(
+//   "/get-shop-info/:id",
+//   catchAsyncErrors(async (req, res, next) => {
+//     try {
+//       const shop = await Shop.findById(req.params.id);
+
+//       if (!shop) {
+//         return next(new ErrorHandler("Shop not found", 404));
+//       }
+
+//       res.status(200).json({
+//         success: true,
+//         shop,
+//       });
+//     } catch (error) {
+//       return next(new ErrorHandler(error.message, 500));
+//     }
+//   }),
+// );
 router.get(
   "/get-shop-info/:id",
   catchAsyncErrors(async (req, res, next) => {
     try {
+      // 1. Yahan database connect karein
+      await connectDatabase();
+
       const shop = await Shop.findById(req.params.id);
 
       if (!shop) {
@@ -189,7 +241,6 @@ router.get(
     }
   }),
 );
-
 // Logout shop
 router.get(
   "/logout",
@@ -248,7 +299,6 @@ router.put("/update-seller-info", isSeller, async (req, res) => {
   }
 });
 
-
 // Update Shop Avatar Route
 router.put(
   "/update-shop-avatar",
@@ -267,7 +317,7 @@ router.put(
         {
           avatar: fileUrl,
         },
-        { new: true }
+        { new: true },
       );
 
       res.status(200).json({
@@ -277,6 +327,6 @@ router.put(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
-  })
+  }),
 );
 module.exports = router;
