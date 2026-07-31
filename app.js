@@ -127,14 +127,27 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 app.use(express.json());
 app.use(cookieParser());
 
-// Sirf aik dafa theek CORS configuration rakhein
+// // Sirf aik dafa theek CORS configuration rakhein
+// app.use(
+//   cors({
+//     origin: ["http://localhost:5173"],
+//     credentials: true,
+//   })
+// );
+
+
+// CORS middleware
 app.use(
   cors({
     origin: ["http://localhost:5173"],
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization", "Access-Control-Allow-Credentials"],
   })
 );
 
+// OPTIONS preflight requests ko handle karne ke liye
+app.options("*", cors());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 app.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 
